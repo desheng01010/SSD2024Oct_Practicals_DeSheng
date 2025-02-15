@@ -6,6 +6,7 @@ class Book {
     this.id = id;
     this.title = title;
     this.author = author;
+    this.availability = availability;
   }
 
   static async getAllBooks() {
@@ -38,7 +39,8 @@ class Book {
       ? new Book(
           result.recordset[0].id,
           result.recordset[0].title,
-          result.recordset[0].author
+          result.recordset[0].author,
+          result.recordset[0].availability
         )
       : null; // Handle book not found
   }
@@ -91,6 +93,21 @@ class Book {
     return result.rowsAffected > 0; // Indicate success based on affected rows
   }
 
+  static async updateBookAvailability(id, bookData) {
+    const connection = await sql.connect(dbConfig);
+
+    const sqlQuery = `UPDATE Books SET availability = @availability WHERE id = @id`; // Parameterized query
+
+    const request = connection.request();
+    request.input("id", id);
+    request.input("availability", bookData.availability); // Handle optional fields
+
+    await request.query(sqlQuery);
+
+    connection.close();
+
+    return this.getBookById(id); // returning the updated book data
+  }
 }
 
 module.exports = Book;

@@ -27,3 +27,9 @@ VALUES
 SELECT * FROM Books;
 SELECT * FROM Users;
 SELECT * FROM UserBooks;
+
+SELECT u.id AS user_id, u.username, u.email, b.id AS book_id, b.title, b.author
+        FROM Users u
+        LEFT JOIN UserBooks ub ON ub.user_id = u.id
+        LEFT JOIN Books b ON ub.book_id = b.id
+        ORDER BY u.username;

@@ -25,51 +25,79 @@ const getBookById = async (req, res) => {
 };
 
 const createBook = async (req, res) => {
-    const newBook = req.body;
-    try {
-      const createdBook = await Book.createBook(newBook);
-      res.status(201).json(createdBook);
-    } catch (error) {
-      console.error(error);
-      res.status(500).send("Error creating book");
-    }
-  };
+  const newBook = req.body;
+  try {
+    const createdBook = await Book.createBook(newBook);
+    res.status(201).json(createdBook);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error creating book");
+  }
+};
 
-  const updateBook = async (req, res) => {
-    const bookId = parseInt(req.params.id);
-    const newBookData = req.body;
-  
-    try {
-      const updatedBook = await Book.updateBook(bookId, newBookData);
-      if (!updatedBook) {
-        return res.status(404).send("Book not found");
-      }
-      res.json(updatedBook);
-    } catch (error) {
-      console.error(error);
-      res.status(500).send("Error updating book");
+const updateBook = async (req, res) => {
+  const bookId = parseInt(req.params.id);
+  const newBookData = req.body;
+
+  try {
+    const updatedBook = await Book.updateBook(bookId, newBookData);
+    if (!updatedBook) {
+      return res.status(404).send("Book not found");
     }
-  };
-  
-  const deleteBook = async (req, res) => {
-    const bookId = parseInt(req.params.id);
-  
-    try {
-      const success = await Book.deleteBook(bookId);
-      if (!success) {
-        return res.status(404).send("Book not found");
-      }
-      res.status(204).send();
-    } catch (error) {
-      console.error(error);
-      res.status(500).send("Error deleting book");
+    res.json(updatedBook);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error updating book");
+  }
+};
+
+const updateBookAvailability = async (req, res) => {
+  const bookId = parseInt(req.params.id);
+  const updateBookData = req.body;
+
+  const existingBook = await Book.getBookById(bookId);
+  if (!existingBook) {
+    return res.status(404).send("Book not found");
+  }
+
+  Object.keys(updateBookData).forEach((key) => {
+    if (updateBookData[key] != null) {
+      existingBook[key] = updateBookData[key];
     }
-  };
-  
+  });
+
+  try {
+    const updatedBook = await Book.updateBookAvailability(bookId, existingBook);
+    if (!updatedBook) {
+      return res.status(404).send("Book not found");
+    }
+    res.json(updatedBook);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error updating book");
+  }
+};
+
+const deleteBook = async (req, res) => {
+  const bookId = parseInt(req.params.id);
+
+  try {
+    const success = await Book.deleteBook(bookId);
+    if (!success) {
+      return res.status(404).send("Book not found");
+    }
+    res.status(204).send();
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error deleting book");
+  }
+};
+
 module.exports = {
-    getAllBooks,
-    createBook,
-    getBookById,
-    updateBook,
-    deleteBook,
+  getAllBooks,
+  createBook,
+  getBookById,
+  updateBook,
+  updateBookAvailability,
+  deleteBook,
 };
