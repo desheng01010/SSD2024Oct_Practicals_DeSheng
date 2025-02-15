@@ -7,6 +7,8 @@ const validateBook = require("./middlewares/validateBook");
 const staticMiddleware = express.static("public"); // Path to the public folder
 const usersController = require("./controllers/usersController");
 const authorizeUser = require("./middlewares/authorizeUser");
+const swaggerUi = require("swagger-ui-express");
+const swaggerDocument = require("./swagger-output.json"); // Import generated spec
 
 const app = express();
 const port = 3000; // Use environment variable or default port
@@ -16,6 +18,9 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true })); // For form data handling
 
 app.use(staticMiddleware); // Mount the static middleware
+
+// Serve the Swagger UI at a specific route
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // Routes for GET requests (replace with appropriate routes for update and delete later)
 app.get("/books", authorizeUser, booksController.getAllBooks);
